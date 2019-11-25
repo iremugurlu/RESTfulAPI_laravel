@@ -9,21 +9,22 @@ use App\Transformers\CategoryTransformer;
 
 class CategoryController extends ApiController
 {
-
-    public function __construct() {
-        parent::__construct();
-
+    public function __construct()
+    {
+        $this->middleware('client.credentials')->only(['index', 'show']);
+        $this->middleware('auth:api')->except(['index', 'show']);        
         $this->middleware('transform.input:' . CategoryTransformer::class)->only(['store', 'update']);
     }
-
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
-
+    public function index()
+    {
         $categories = Category::all();
+
         return $this->showAll($categories);
     }
 
@@ -33,7 +34,9 @@ class CategoryController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+        $this->allowedAdminAction();
         
         $rules = [
             'name' => 'required',
@@ -45,7 +48,6 @@ class CategoryController extends ApiController
         $newCategory = Category::create($request->all());
 
         return $this->showOne($newCategory, 201);
-
     }
 
     /**
@@ -54,8 +56,8 @@ class CategoryController extends ApiController
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category) {
-        
+    public function show(Category $category)
+    {
         return $this->showOne($category);
     }
 
@@ -66,14 +68,17 @@ class CategoryController extends ApiController
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category) {
+    public function update(Request $request, Category $category)
+    {
+        $this->allowedAdminAction();
         
         $category->fill($request->only([
-            'name', 'description',
+            'name',
+            'description',
         ]));
 
-        if($category->isClean()) {
-            return $this->errorResponse('You need to specify another value to update', 422);
+        if ($category->isClean()) {
+            return $this->errorResponse('You need to specify any different value to update', 422);
         }
 
         $category->save();
@@ -87,7 +92,9 @@ class CategoryController extends ApiController
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category) {
+    public function destroy(Category $category)
+    {
+        $this->allowedAdminAction();
         
         $category->delete();
 

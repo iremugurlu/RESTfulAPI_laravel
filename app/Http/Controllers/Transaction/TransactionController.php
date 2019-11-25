@@ -8,15 +8,23 @@ use App\Http\Controllers\ApiController;
 
 class TransactionController extends ApiController
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware('scope:read-general')->only('show');
+        $this->middleware('can:view,transaction')->only('show');
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index()
+    {
+        $this->allowedAdminAction();
         
         $transactions = Transaction::all();
-
 
         return $this->showAll($transactions);
     }
@@ -24,11 +32,11 @@ class TransactionController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  \App\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function show(Transaction $transaction) {
-        
+    public function show(Transaction $transaction)
+    {
         return $this->showOne($transaction);
     }
 }

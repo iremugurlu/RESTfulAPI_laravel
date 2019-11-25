@@ -15,12 +15,12 @@ class SellerTransformer extends TransformerAbstract
     public function transform(Seller $seller)
     {
         return [
-            'identifier' => (int) $seller->id,
-            'name' => (string) $seller->name,
-            'email' => (string) $seller->email,
-            'isVerified' => (int) $seller->verified,
-            'creationDate' => (string) $seller->created_at,
-            'lastChange' => (string) $seller->updated_at,
+            'identifier' => (int)$seller->id,
+            'name' => (string)$seller->name,
+            'email' => (string)$seller->email,
+            'isVerified' => (int)$seller->verified,
+            'creationDate' => (string)$seller->created_at,
+            'lastChange' => (string)$seller->updated_at,
             'deletedDate' => isset($seller->deleted_at) ? (string) $seller->deleted_at : null,
 
             'links' => [
@@ -35,26 +35,27 @@ class SellerTransformer extends TransformerAbstract
                 [
                     'rel' => 'seller.categories',
                     'href' => route('sellers.categories.index', $seller->id),
-                ], 
+                ],
                 [
                     'rel' => 'seller.products',
                     'href' => route('sellers.products.index', $seller->id),
-                ],   
+                ],
                 [
                     'rel' => 'seller.transactions',
                     'href' => route('sellers.transactions.index', $seller->id),
-                ], 
+                ],
                 [
                     'rel' => 'user',
                     'href' => route('users.show', $seller->id),
                 ],
-            ]
+            ],
         ];
     }
 
-    public static function originalAttribute($index) {
+    public static function originalAttribute($index)
+    {
         $attributes = [
-            'identifier' =>'id',
+            'identifier' => 'id',
             'name' => 'name',
             'email' => 'email',
             'isVerified' => 'verified',
@@ -66,9 +67,10 @@ class SellerTransformer extends TransformerAbstract
         return isset($attributes[$index]) ? $attributes[$index] : null;
     }
 
-    public static function transformedAttribute($index) {
+    public static function transformedAttribute($index)
+    {
         $attributes = [
-            'id' =>'identifier',
+            'id' => 'identifier',
             'name' => 'name',
             'email' => 'email',
             'verified' => 'isVerified',

@@ -9,16 +9,24 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
 use App\Transformers\ProductTransformer;
+use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SellerProductController extends ApiController
 {
-
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
-        $this->middleware('transform.input' . ProductTransformer::class)->only(['store', 'update']);
+        $this->middleware('transform.input:' . ProductTransformer::class)->only(['store', 'update']);
+        $this->middleware('scope:manage-products')->except('index');
+
+        $this->middleware('can:view,seller')->only('index');
+        $this->middleware('can:sale,seller')->only('store');
+        $this->middleware('can:edit-product,seller')->only('update');
+        $this->middleware('can:delete-product,seller')->only('destroy');
     }
+    
     /**
      * Display a listing of the resource.
      *
@@ -26,11 +34,15 @@ class SellerProductController extends ApiController
      */
     public function index(Seller $seller)
     {
-        $products = $seller->products;
+        if (request()->user()->tokenCan('read-general') || request()->user()->tokenCan('manage-products')) {
+            $products = $seller->products;
 
-        return $this->showAll($products);
+            return $this->showAll($products);
+        }
+
+        throw new AuthorizationException('Invalid scope(s)');
+        
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -80,26 +92,27 @@ class SellerProductController extends ApiController
         $this->checkSeller($seller, $product);
 
         $product->fill($request->only([
-            'name', 'description', 'quantity',
+            'name',
+            'description',
+            'quantity',
         ]));
 
-        if($request->has('status')) {
+        if ($request->has('status')) {
             $product->status = $request->status;
 
-            if($product->isAvailable() && $product->categories()->count() == 0) {
+            if ($product->isAvailable() && $product->categories()->count() == 0) {
                 return $this->errorResponse('An active product must have at least one category', 409);
             }
         }
 
-        if($request->hasFile('image')) {
-            
+        if ($request->hasFile('image')) {
             Storage::delete($product->image);
 
             $product->image = $request->image->store('');
         }
 
-        if($product->isClean()) {
-            return $this->errorResponse('You need to specify a diffrent value to update', 422);
+        if ($product->isClean()) {
+            return $this->errorResponse('You need to specify a different value to update', 422);
         }
 
         $product->save();
@@ -118,15 +131,15 @@ class SellerProductController extends ApiController
         $this->checkSeller($seller, $product);
 
         $product->delete();
-
         Storage::delete($product->image);
 
         return $this->showOne($product);
     }
 
-    protected function checkSeller(Seller $seller, Product $product) {
-        if($seller->id != $product->seller_id) {
-            throw new HttpException(422, 'The specified seller is not the actual seller of the product');
+    protected function checkSeller(Seller $seller, Product $product)
+    {
+        if ($seller->id != $product->seller_id) {
+            throw new HttpException(422, 'The specified seller is not the actual seller of the product');            
         }
     }
 }

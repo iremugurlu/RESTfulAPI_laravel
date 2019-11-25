@@ -27,11 +27,12 @@ trait ApiResponser
 		}
 
 		$transformer = $collection->first()->transformer;
+
 		$collection = $this->filterData($collection, $transformer);
 		$collection = $this->sortData($collection, $transformer);
 		$collection = $this->paginate($collection);
 		$collection = $this->transformData($collection, $transformer);
-		$collection = $this->cacheResponse($collection);
+		$collection = $this->cacheResponse($collection);		
 
 		return $this->successResponse($collection, $code);
 	}
@@ -39,6 +40,7 @@ trait ApiResponser
 	protected function showOne(Model $instance, $code = 200)
 	{
 		$transformer = $instance->transformer;
+
 		$instance = $this->transformData($instance, $transformer);
 
 		return $this->successResponse($instance, $code);
@@ -66,6 +68,7 @@ trait ApiResponser
 	{
 		if (request()->has('sort_by')) {
 			$attribute = $transformer::originalAttribute(request()->sort_by);
+
 			$collection = $collection->sortBy->{$attribute};
 		}
 
@@ -79,9 +82,10 @@ trait ApiResponser
 		];
 
 		Validator::validate(request()->all(), $rules);
-		$page = LengthAwarePaginator::resolveCurrentPage();
-		$perPage = 15;
 
+		$page = LengthAwarePaginator::resolveCurrentPage();
+
+		$perPage = 15;
 		if (request()->has('per_page')) {
 			$perPage = (int) request()->per_page;
 		}
@@ -95,6 +99,7 @@ trait ApiResponser
 		$paginated->appends(request()->all());
 
 		return $paginated;
+
 	}
 
 	protected function transformData($data, $transformer)
@@ -108,10 +113,13 @@ trait ApiResponser
 	{
 		$url = request()->url();
 		$queryParams = request()->query();
+
 		ksort($queryParams);
+
 		$queryString = http_build_query($queryParams);
+
 		$fullUrl = "{$url}?{$queryString}";
-		
+
 		return Cache::remember($fullUrl, 30/60, function() use($data) {
 			return $data;
 		});

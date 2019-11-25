@@ -8,15 +8,19 @@ use App\Http\Controllers\ApiController;
 
 class ProductController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('client.credentials')->only(['index', 'show']);
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
-        
+    public function index()
+    {
         $products = Product::all();
-
 
         return $this->showAll($products);
     }
@@ -27,9 +31,8 @@ class ProductController extends ApiController
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product) {
-        
+    public function show(Product $product)
+    {
         return $this->showOne($product);
     }
-
 }

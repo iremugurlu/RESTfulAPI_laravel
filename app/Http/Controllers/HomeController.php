@@ -19,10 +19,26 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
         return view('home');
     }
+
+    public function getTokens()
+    {
+        return view('home.personal-tokens');
+    }
+
+    public function getAuthorizedClients()
+    {
+        return view('home.authorized-clients');
+    }
+
+    public function getClients()
+    {
+        return view('home.personal-clients');
+    }
+
 }

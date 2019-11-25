@@ -15,11 +15,11 @@ class CategoryTransformer extends TransformerAbstract
     public function transform(Category $category)
     {
         return [
-            'identifier' => (int) $category->id,
-            'title' => (string) $category->name,
-            'details' => (string) $category->description,
-            'creationDate' => (string) $category->created_at,
-            'lastChange' => (string) $category->updated_at,
+            'identifier' => (int)$category->id,
+            'title' => (string)$category->name,
+            'details' => (string)$category->description,
+            'creationDate' => (string)$category->created_at,
+            'lastChange' => (string)$category->updated_at,
             'deletedDate' => isset($category->deleted_at) ? (string) $category->deleted_at : null,
 
             'links' => [
@@ -30,15 +30,15 @@ class CategoryTransformer extends TransformerAbstract
                 [
                     'rel' => 'category.buyers',
                     'href' => route('categories.buyers.index', $category->id),
-                ], 
+                ],
                 [
                     'rel' => 'category.products',
                     'href' => route('categories.products.index', $category->id),
-                ], 
+                ],
                 [
                     'rel' => 'category.sellers',
                     'href' => route('categories.sellers.index', $category->id),
-                ], 
+                ],
                 [
                     'rel' => 'category.transactions',
                     'href' => route('categories.transactions.index', $category->id),
@@ -47,9 +47,10 @@ class CategoryTransformer extends TransformerAbstract
         ];
     }
 
-    public static function originalAttribute($index) {
+    public static function originalAttribute($index)
+    {
         $attributes = [
-            'identifier' =>'id',
+            'identifier' => 'id',
             'title' => 'name',
             'details' => 'description',
             'creationDate' => 'created_at',
@@ -60,9 +61,10 @@ class CategoryTransformer extends TransformerAbstract
         return isset($attributes[$index]) ? $attributes[$index] : null;
     }
 
-    public static function transformedAttribute($index) {
+    public static function transformedAttribute($index)
+    {
         $attributes = [
-            'id' =>'identifier',
+            'id' => 'identifier',
             'name' => 'title',
             'description' => 'details',
             'created_at' => 'creationDate',
@@ -72,5 +74,4 @@ class CategoryTransformer extends TransformerAbstract
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
     }
-
 }

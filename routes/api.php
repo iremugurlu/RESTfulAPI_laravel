@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
  * Buyers
  */
 Route::resource('buyers', 'Buyer\BuyerController', ['only'=>['index', 'show']]);
-Route::resource('buyers.transactions', 'Buyer\BuyerTransactionController ', ['only'=>['index']]);
+Route::resource('buyers.transactions', 'Buyer\BuyerTransactionController', ['only'=>['index']]);
 Route::resource('buyers.products', 'Buyer\BuyerProductController', ['only' => ['index']]);
 Route::resource('buyers.sellers', 'Buyer\BuyerSellerController', ['only' => ['index']]);
 Route::resource('buyers.categories', 'Buyer\BuyerCategoryController', ['only' => ['index']]);
@@ -64,5 +64,7 @@ Route::resource('transactions.sellers', 'Transaction\TransactionSellerController
 Route::resource('users', 'User\UserController', ['except'=>['create', 'edit']]);
 Route::name('verify')->get('users/verify/{token}', 'User\UserController@verify');
 Route::name('resend')->get('users/{user}/resend', 'User\UserController@resend');
+
+Route::post('oauth/token', '\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken');
 
 
