@@ -46,8 +46,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
-    {
+    public function report(Exception $exception) {
         parent::report($exception);
     }
 
@@ -58,8 +57,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
-    {
+    public function render($request, Exception $exception) {
         $response = $this->handleException($request, $exception);
 
         app(CorsService::class)->addActualRequestHeaders($response, $request);
@@ -68,8 +66,7 @@ class Handler extends ExceptionHandler
 
     }
 
-    public function handleException($request, Exception $exception)
-    {
+    public function handleException($request, Exception $exception) {
         if ($exception instanceof ValidationException) {
             return $this->convertValidationExceptionToResponse($exception, $request);
         }
@@ -117,6 +114,7 @@ class Handler extends ExceptionHandler
         }
 
         return $this->errorResponse('Unexpected Exception. Try later', 500);
+
     }
 
     /**
@@ -126,8 +124,7 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
+    protected function unauthenticated($request, AuthenticationException $exception) {
         if ($this->isFrontend($request)) {
             return redirect()->guest('login');
         }
@@ -142,8 +139,7 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
-    {
+    protected function convertValidationExceptionToResponse(ValidationException $e, $request) {
         $errors = $e->validator->errors()->getMessages();
 
         if ($this->isFrontend($request)) {
@@ -156,8 +152,7 @@ class Handler extends ExceptionHandler
         return $this->errorResponse($errors, 422);
     }
 
-    private function isFrontend($request)
-    {
+    private function isFrontend($request) {
         return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
     }
 }

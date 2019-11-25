@@ -18,8 +18,7 @@ class BuyerPolicy
      * @param  \App\Buyer  $buyer
      * @return mixed
      */
-    public function view(User $user, Buyer $buyer)
-    {
+    public function view(User $user, Buyer $buyer) {
         return $user->id === $buyer->id;
     }
     /**
@@ -29,8 +28,7 @@ class BuyerPolicy
      * @param  \App\Buyer  $buyer
      * @return mixed
      */
-    public function purchase(User $user, Buyer $buyer)
-    {
+    public function purchase(User $user, Buyer $buyer) {
         return $user->id === $buyer->id;
     }
 }
